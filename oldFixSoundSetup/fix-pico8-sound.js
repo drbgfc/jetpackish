@@ -1,6 +1,6 @@
 
 (function() {
-  // inject loading screen CSS with responsive scaling
+  // inject loading screen CSS
   var style = document.createElement('style')
   style.textContent = `
     /* Loading Screen Styles - 8-bit PICO-8 */
@@ -76,129 +76,24 @@
       0%, 49% { opacity: 1; }
       50%, 100% { opacity: 0; }
     }
-
-    /* Responsive scaling for mobile devices */
-    @media screen and (max-width: 768px) {
-      .loading-screen {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 20px !important;
-      }
-
-      .gem-row {
-        gap: 10px;
-        margin-bottom: 15px;
-      }
-
-      .gem-row .gem {
-        width: 12px;
-        height: 12px;
-      }
-
-      .loading-title {
-        font-size: 48px;
-        letter-spacing: 10px;
-        margin-bottom: 15px;
-      }
-
-      .loading-subtitle {
-        font-size: 16px;
-        letter-spacing: 3px;
-        margin-bottom: 40px;
-      }
-
-      .loading-instructions {
-        font-size: 16px;
-        max-width: 90%;
-        padding: 20px;
-        margin-bottom: 40px;
-      }
-
-      .loading-instructions div {
-        margin: 10px 0;
-        padding-left: 16px;
-      }
-
-      .loading-challenge {
-        margin-top: 16px;
-        font-size: 16px;
-      }
-
-      .loading-click {
-        font-size: 24px;
-        letter-spacing: 3px;
-      }
-    }
-
-    /* Extra small screens */
-    @media screen and (max-width: 480px) {
-      .loading-title {
-        font-size: 36px;
-        letter-spacing: 6px;
-      }
-
-      .loading-subtitle {
-        font-size: 14px;
-      }
-
-      .loading-instructions {
-        font-size: 14px;
-      }
-
-      .loading-click {
-        font-size: 20px;
-      }
-    }
-
-    /* Landscape orientation on mobile */
-    @media screen and (max-width: 768px) and (orientation: landscape) {
-      .loading-screen {
-        padding: 10px !important;
-      }
-
-      .loading-title {
-        font-size: 32px;
-        margin-bottom: 8px;
-      }
-
-      .loading-subtitle {
-        font-size: 12px;
-        margin-bottom: 15px;
-      }
-
-      .loading-instructions {
-        font-size: 12px;
-        padding: 12px;
-        margin-bottom: 15px;
-      }
-
-      .loading-instructions div {
-        margin: 4px 0;
-      }
-
-      .loading-click {
-        font-size: 16px;
-      }
-
-      .gem-row {
-        margin-bottom: 8px;
-      }
-
-      .gem-row .gem {
-        width: 8px;
-        height: 8px;
-      }
-    }
   `
   document.head.appendChild(style)
 
+  // fetch original file name
+  var s = document.scripts[document.scripts.length - 1]
+  var file = s.getAttribute('data-original-file')
+  if (!file) throw new Error('Missing data-original-file attribute.')
+
   // strip vendor prefixes
-  var WebAudioAPI = window.AudioContext
+  window.AudioContext = window.AudioContext
     || window.webkitAudioContext
     || window.mozAudioContext
     || window.oAudioContext
     || window.msAudioContext
+
+  // make AudioContext a singleton so we control it
+  var ctx = new window.AudioContext
+  window.AudioContext = function() { return ctx }
 
   // create overlay
   var o = document.createElement('div')
@@ -250,29 +145,25 @@
     // ...until overlay is clicked
     document.body.style.overflow = ''
 
-    // Create and unlock audio context for jetpackish.html
-    // This sets the global pico8_audio_context that jetpackish.html uses
-    if (WebAudioAPI) {
-      window.pico8_audio_context = new WebAudioAPI()
-      
-      // Wake up audio on iOS by playing a silent buffer
-      try {
-        var buffer = pico8_audio_context.createBuffer(1, 1, 22050)
-        var source = pico8_audio_context.createBufferSource()
-        source.buffer = buffer
-        source.connect(pico8_audio_context.destination)
-        source.start(0)
-      } catch (err) {
-        console.log('Audio unlock failed:', err)
-      }
-    }
+    // then unlock AudioContext on iOS
+    var buffer = ctx.createBuffer(1, 1, 22050)
+    var source = ctx.createBufferSource()
+    source.connect(ctx.destination)
+    if (source.noteOn) source.noteOn(0)
+    else source.start(0)
 
-    // delete overlay div
+    // dynamically load original script
+    var s = document.createElement('script')
+    s.setAttribute('src', file)
+    document.body.appendChild(s)
+
+    // reveal fullscreen control if present
+    try {
+      var fs = document.getElementById('fullscreen-btn')
+      if (fs) fs.style.display = 'block'
+    } catch (e) { /* ignore */ }
+
+    // and delete overlay div
     document.body.removeChild(o)
-
-    // directly start the game (p8_run_cart is defined in index.html)
-    if (typeof p8_run_cart === 'function') {
-      p8_run_cart()
-    }
   }
 })()
