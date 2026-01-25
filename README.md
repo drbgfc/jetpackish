@@ -19,13 +19,15 @@
 When you have a new version of the game to deploy:
 
 1. **Export from PICO-8:**
+   - Run the game and press `F7` to capture an image for the play screen
    - In PICO-8, run: `EXPORT JETPACKISH.HTML`
    - This creates two files: `jetpackish.html` and `jetpackish.js`
 
 2. **Update the files:**
-   - The `jetpackish.js` file automatically overwrites the existing one (no action needed)
-   - Rename `jetpackish.html` to `index.html` (overwriting the old `index.html`)
-   - Optional: open `index.html` and set `var p8_autoplay = true;` so the exported page will attempt to autoplay when browsers permit (this helps on platforms that allow autoplay after audio has been unlocked).
+   - *NOTE: If we haven't updated the version of pico-8, then only the 1st step is required. We can reuse index.html as is...*
+   - Overwrite `jetpackish.js` with the newly exported version
+   - Rename `jetpackish.html` to `index.html` and overwrite the old `index.html`
+   - Optional: open `index.html` and set `var p8_autoplay = true;` so the exported page will attempt to autoplay when browsers permit
 
 3. **Add the intro screen script:**
    - Open `index.html` in your editor

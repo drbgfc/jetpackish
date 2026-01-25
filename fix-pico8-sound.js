@@ -1,5 +1,42 @@
 
 (function() {
+  // inject favicons and web manifest
+  var head = document.head
+  
+  // Favicon (SVG)
+  var faviconSvg = document.createElement('link')
+  faviconSvg.rel = 'icon'
+  faviconSvg.type = 'image/svg+xml'
+  faviconSvg.href = 'public/icons/favicon.svg'
+  head.appendChild(faviconSvg)
+  
+  // Favicon (PNG fallback)
+  var faviconPng = document.createElement('link')
+  faviconPng.rel = 'icon'
+  faviconPng.type = 'image/png'
+  faviconPng.sizes = '96x96'
+  faviconPng.href = 'public/icons/favicon-96x96.png'
+  head.appendChild(faviconPng)
+  
+  // Apple Touch Icon
+  var appleTouchIcon = document.createElement('link')
+  appleTouchIcon.rel = 'apple-touch-icon'
+  appleTouchIcon.sizes = '180x180'
+  appleTouchIcon.href = 'public/icons/apple-touch-icon.png'
+  head.appendChild(appleTouchIcon)
+  
+  // Web App Manifest
+  var manifest = document.createElement('link')
+  manifest.rel = 'manifest'
+  manifest.href = 'public/site.webmanifest'
+  head.appendChild(manifest)
+  
+  // Theme color for mobile browsers
+  var themeColor = document.createElement('meta')
+  themeColor.name = 'theme-color'
+  themeColor.content = '#222'
+  head.appendChild(themeColor)
+
   // inject loading screen CSS with responsive scaling
   var style = document.createElement('style')
   style.textContent = `
@@ -213,22 +250,21 @@
     '<div class="loading-title">JETPACKISH</div>' +
     '<div class="loading-subtitle">PICO-8 GAME</div>' +
     '<div class="loading-instructions">' +
-    '<div>ARROW KEYS: MOVE/JUMP/FLY</div>' +
-    '<div>GET ALL GEMS TO WIN</div>' +
-    '<div>SAVE YOUR FUEL</div>' +
+    '<div>GET ALL GEMS TO WIN.</div>' +
+    '<div>SAVE YOUR FUEL.</div>' +
     '<div>BE FAST. BE BRAVE.</div>' +
     '<br>' +
     '<div class="loading-challenge">I CAN GET TO LVL 5... CAN YOU?</div>' +
     '</div>' +
     '<br>' +
-    '<div class="loading-click">[CLICK OR PRESS ANY KEY TO START]</div>'
+    '<div class="loading-click">[CLICK, TOUCH, OR PRESS ANY KEY TO START]</div>'
   o.style.cssText = [
     'position: fixed',
     'top: 0',
     'left: 0',
     'right: 0',
     'bottom: 0',
-    'background: #303030',
+    'background: #222',
     'color: white',
     'text-align: center',
     'padding-top: 80px',
